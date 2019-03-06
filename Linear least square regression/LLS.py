@@ -88,7 +88,7 @@ def degree7(x, y, x_np, ones_arr_np):
 
 
 def main():
-	data = np.loadtxt('hw2.dat', delimiter=' ')
+	data = np.loadtxt('LLS.dat', delimiter=' ')
 
 	x, y = data[:,0], data[:,1]
 	data_len = np.size(x)

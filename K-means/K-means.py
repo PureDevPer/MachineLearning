@@ -53,7 +53,7 @@ def kMeans(data, k_number, colors):
 
 
 def main():
-	data = np.loadtxt('hw3.dat', delimiter=' ')
+	data = np.loadtxt('K-means.dat', delimiter=' ')
 	colors=['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
 	kMeans(data, 2, colors)
 	kMeans(data, 3, colors)
