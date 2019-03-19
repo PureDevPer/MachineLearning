@@ -34,7 +34,6 @@ train_data = train_data.values
 train_labels = train_labels.values
 test_data = test_data.values
 test_labels = test_labels.values
-#del train, test
 
 
 rand = random.randint(0, numTrain - 1)
@@ -64,10 +63,6 @@ plt.show()
 '''
 
 tf.set_random_seed(777)  # for reproducibility
-
-#numClasses = 10
-#numClasses = 47
-
 tf.reset_default_graph()
 
 # EMNIST data image of shape 28 * 28 = 784
