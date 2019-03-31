@@ -118,7 +118,7 @@ class LogisticRegression:
 
             # 100 iter 마다 cost 출력
             if (self._verbose == True and i % 100 == 0):
-                print('cost :', cost)
+                print('cost :', cost, '\t theta: ', self._theta)
 
     def predict_prob(self, x_data):
         if self._fit_intercept:
