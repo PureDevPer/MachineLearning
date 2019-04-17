@@ -5,11 +5,11 @@ import random
 import tensorflow as tf
 
 
-train = pd.read_csv('emnist/emnist-balanced-train.csv', header=None)
-#train = pd.read_csv('emnist/emnist-digits-train.csv', header=None)
+#train = pd.read_csv('emnist/emnist-balanced-train.csv', header=None)
+train = pd.read_csv('emnist/emnist-digits-train.csv', header=None)
 
-test = pd.read_csv('emnist/emnist-balanced-test.csv', header=None)
-#test = pd.read_csv('emnist/emnist-digits-test.csv', header=None)
+#test = pd.read_csv('emnist/emnist-balanced-test.csv', header=None)
+test = pd.read_csv('emnist/emnist-digits-test.csv', header=None)
 
 #train.head()
 
