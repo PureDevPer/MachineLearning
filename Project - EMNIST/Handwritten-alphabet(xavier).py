@@ -89,15 +89,9 @@ W4 = tf.get_variable("W4", shape=[512, numClasses], initializer=tf.contrib.layer
 b4 = tf.Variable(tf.random_normal([numClasses]))
 hypothesis = tf.matmul(L3, W4) + b4
 
-# define cost/loss & optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-    logits=hypothesis, labels=Y))
+# cost & train
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
 train = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
-
-
-#cost = tf.reduce_mean(-tf.reduce_sum(Y * tf.log(hypothesis), axis=1))
-#train = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost)
-
 
 
 # parameters
@@ -130,14 +124,7 @@ with tf.Session() as sess:
 
     # Test the model using test sets
     print("Accuracy: ", sess.run(accuracy, feed_dict={X: test_data, Y: test_labels}))
-    '''
-    print(
-        "Accuracy: ",
-        accuracy.eval(
-            session=sess, feed_dict={X: test_data, Y: test_labels}
-        ),
-    )
-    '''
+    
 
     # Get Label and predict
     r = random.randint(0, numTest - 1)
