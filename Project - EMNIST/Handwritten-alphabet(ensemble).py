@@ -57,23 +57,24 @@ test_data = np.apply_along_axis(rotate, 1, test_data)/255
 
 
 
+
 class Model:
 
     def __init__(self, sess, name):
         self.sess = sess
         self.name = name
-        self._build_net()
+        self._runEnsemble()
 
-    def _build_net(self):
+    def _runEnsemble(self):
         with tf.variable_scope(self.name):
             self.training = tf.placeholder(tf.bool)
 
-            # input place holders
+            # EMNIST data image of shape 28 * 28 = 784
             self.X = tf.placeholder(tf.float32, [None, 784])
-
-            # img 28x28x1 (black/white), Input Layer
-            X_img = tf.reshape(self.X, [-1, 28, 28, 1])
+            # 47 classes: 10 digits, 26 letters, and 11 capital letters
             self.Y = tf.placeholder(tf.float32, [None, numClasses])
+            # Input Image
+            X_img = tf.reshape(self.X, [-1, 28, 28, 1])
 
             # Convolutional Layer 1 and Pooling Layer 1
             conv1 = tf.layers.conv2d(inputs=X_img, filters=32, kernel_size=[3, 3], padding="SAME", activation=tf.nn.relu)
@@ -132,13 +133,13 @@ print('numTrain: ', numTrain)
 num_iterations = int( numTrain / batch_size)
 
 
-# Start training model
+# Train
 for epoch in range(num_epochs):
     avg_cost_list = np.zeros(len(models))
     for i in range(num_iterations):
         batch_xs, batch_ys = train_data[i * 100: (i + 1) * 100], train_labels[i * 100: (i + 1) * 100]
 
-        # Start training each model
+        # Train each model
         for m_idx, m in enumerate(models):
             c, _ = m.train(batch_xs, batch_ys)
             avg_cost_list[m_idx] += c / num_iterations
@@ -148,7 +149,7 @@ for epoch in range(num_epochs):
 print('Learning Finished!')
 
 
-# Test model and check accuracy
+# Test & accuracy
 predictions = np.zeros([numTest, numClasses])
 for m_idx, m in enumerate(models):
     print(m_idx, 'Accuracy:', m.get_accuracy(test_data, test_labels))
@@ -157,4 +158,6 @@ for m_idx, m in enumerate(models):
 
 ensemble_correct_prediction = tf.equal(tf.argmax(predictions, 1), tf.argmax(test_labels, 1))
 ensemble_accuracy = tf.reduce_mean(tf.cast(ensemble_correct_prediction, tf.float32))
-print('Ensemble accuracy:', sess.run(ensemble_accuracy))
+print('Final accuracy:', sess.run(ensemble_accuracy))
+
+
