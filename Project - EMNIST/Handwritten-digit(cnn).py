@@ -75,99 +75,49 @@ X_img = tf.reshape(X, [-1, 28, 28, 1])
 # dropout (keep_prob) rate  0.7 on training, but should be 1 for testing
 keep_prob = tf.placeholder(tf.float32)
 
-# weights & bias for nn layers
-'''
-W1 = tf.get_variable("W1", shape=[784, 512], initializer=tf.contrib.layers.xavier_initializer())
-b1 = tf.Variable(tf.random_normal([512]))
-L1 = tf.nn.relu(tf.matmul(X, W1) + b1)
-L1 = tf.nn.dropout(L1, keep_prob=keep_prob)
-
-W2 = tf.get_variable("W2", shape=[512, 512], initializer=tf.contrib.layers.xavier_initializer())
-b2 = tf.Variable(tf.random_normal([512]))
-L2 = tf.nn.relu(tf.matmul(L1, W2) + b2)
-L2 = tf.nn.dropout(L2, keep_prob=keep_prob)
-
-W3 = tf.get_variable("W3", shape=[512, 512], initializer=tf.contrib.layers.xavier_initializer())
-b3 = tf.Variable(tf.random_normal([512]))
-L3 = tf.nn.relu(tf.matmul(L2, W3) + b3)
-L3 = tf.nn.dropout(L3, keep_prob=keep_prob)
-
-W4 = tf.get_variable("W4", shape=[512, numClasses], initializer=tf.contrib.layers.xavier_initializer())
-b4 = tf.Variable(tf.random_normal([numClasses]))
-hypothesis = tf.matmul(L3, W4) + b4
-'''
-
-# L1 ImgIn shape=(?, 28, 28, 1)
+# L1 Img Input shape=(n, 28, 28, 1)
+# Conv = (n, 28, 28, 32)
+# Pool = (n, 14, 14, 32)
 W1 = tf.Variable(tf.random_normal([3, 3, 1, 32], stddev=0.01))
-#    Conv     -> (?, 28, 28, 32)
-#    Pool     -> (?, 14, 14, 32)
 L1 = tf.nn.conv2d(X_img, W1, strides=[1, 1, 1, 1], padding='SAME')
 L1 = tf.nn.relu(L1)
 L1 = tf.nn.max_pool(L1, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')
 L1 = tf.nn.dropout(L1, keep_prob=keep_prob)
-'''
-Tensor("Conv2D:0", shape=(?, 28, 28, 32), dtype=float32)
-Tensor("Relu:0", shape=(?, 28, 28, 32), dtype=float32)
-Tensor("MaxPool:0", shape=(?, 14, 14, 32), dtype=float32)
-Tensor("dropout/mul:0", shape=(?, 14, 14, 32), dtype=float32)
-'''
 
-# L2 ImgIn shape=(?, 14, 14, 32)
+# L2 Img Input shape=(n, 14, 14, 32)
+# Conv = (n, 14, 14, 64)
+# Pool = (n, 7, 7, 64)
 W2 = tf.Variable(tf.random_normal([3, 3, 32, 64], stddev=0.01))
-#    Conv      ->(?, 14, 14, 64)
-#    Pool      ->(?, 7, 7, 64)
 L2 = tf.nn.conv2d(L1, W2, strides=[1, 1, 1, 1], padding='SAME')
 L2 = tf.nn.relu(L2)
 L2 = tf.nn.max_pool(L2, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')
 L2 = tf.nn.dropout(L2, keep_prob=keep_prob)
-'''
-Tensor("Conv2D_1:0", shape=(?, 14, 14, 64), dtype=float32)
-Tensor("Relu_1:0", shape=(?, 14, 14, 64), dtype=float32)
-Tensor("MaxPool_1:0", shape=(?, 7, 7, 64), dtype=float32)
-Tensor("dropout_1/mul:0", shape=(?, 7, 7, 64), dtype=float32)
-'''
 
-# L3 ImgIn shape=(?, 7, 7, 64)
+# L3 Img Input shape=(n, 7, 7, 64)
+# Conv = (n, 7, 7, 128)
+# Pool = (n, 4, 4, 128)
+# Reshape = (n, 4 * 4 * 128) 
 W3 = tf.Variable(tf.random_normal([3, 3, 64, 128], stddev=0.01))
-#    Conv      ->(?, 7, 7, 128)
-#    Pool      ->(?, 4, 4, 128)
-#    Reshape   ->(?, 4 * 4 * 128) 
-#    Flatten them for FC
 L3 = tf.nn.conv2d(L2, W3, strides=[1, 1, 1, 1], padding='SAME')
 L3 = tf.nn.relu(L3)
 L3 = tf.nn.max_pool(L3, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')
 L3 = tf.nn.dropout(L3, keep_prob=keep_prob)
 L3_flat = tf.reshape(L3, [-1, 128 * 4 * 4])
-'''
-Tensor("Conv2D_2:0", shape=(?, 7, 7, 128), dtype=float32)
-Tensor("Relu_2:0", shape=(?, 7, 7, 128), dtype=float32)
-Tensor("MaxPool_2:0", shape=(?, 4, 4, 128), dtype=float32)
-Tensor("dropout_2/mul:0", shape=(?, 4, 4, 128), dtype=float32)
-Tensor("Reshape_1:0", shape=(?, 2048), dtype=float32)
-'''
 
-# L4 FC 4x4x128 inputs -> 625 outputs
+# L4 Fully Connected (FC) 4x4x128 inputs -> 625 outputs
 W4 = tf.get_variable("W4", shape=[128*4*4, 625], initializer=tf.contrib.layers.xavier_initializer())
 b4 = tf.Variable(tf.random_normal([625]))
 L4 = tf.nn.relu(tf.matmul(L3_flat, W4)+b4)
 L4 = tf.nn.dropout(L4, keep_prob=keep_prob)
-'''
-Tensor("Relu_3:0", shape=(?, 625), dtype=float32)
-Tensor("dropout_3/mul:0", shape=(?, 625), dtype=float32)
-'''
 
-# L5 Final FC 625 inputs -> numClasses outputs
+# L5 Final Fully Connected (FC) 625 inputs -> numClasses outputs
 W5 = tf.get_variable("W5", shape=[625, numClasses], initializer=tf.contrib.layers.xavier_initializer())
 b5 = tf.Variable(tf.random_normal([numClasses]))
 logits = tf.matmul(L4, W5) + b5
-'''
-Tensor("add_1:0", shape=(?, 10), dtype=float32)
-'''
 
 
-# define cost/loss & optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-    logits=logits, labels=Y))
+# cost & train
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=Y))
 train = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 
@@ -202,14 +152,7 @@ with tf.Session() as sess:
 
     # Test the model using test sets
     print("Accuracy: ", sess.run(accuracy, feed_dict={X: test_data, Y: test_labels, keep_prob: 1}))
-    '''
-    print(
-        "Accuracy: ",
-        accuracy.eval(
-            session=sess, feed_dict={X: test_data, Y: test_labels}
-        ),
-    )
-    '''
+    
 
     # Get Label and predict
     r = random.randint(0, numTest - 1)
