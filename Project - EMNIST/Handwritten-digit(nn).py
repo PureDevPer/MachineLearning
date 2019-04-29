@@ -71,28 +71,7 @@ X = tf.placeholder(tf.float32, [None, 784])
 # 47 classes: 10 digits, 26 letters, and 11 capital letters 
 Y = tf.placeholder(tf.float32, [None, numClasses])
 
-'''
-W = tf.Variable(tf.random_normal([784, numClasses]))
-b = tf.Variable(tf.random_normal([numClasses]))
 
-# Hypothesis (using softmax)
-hypothesis = tf.nn.softmax(tf.matmul(X, W) + b)
-'''
-
-# weights & bias for nn layers
-'''
-W1 = tf.Variable(tf.random_normal([784, 256]))
-b1 = tf.Variable(tf.random_normal([256]))
-L1 = tf.nn.relu(tf.matmul(X, W1) + b1)
-
-W2 = tf.Variable(tf.random_normal([256, 256]))
-b2 = tf.Variable(tf.random_normal([256]))
-L2 = tf.nn.relu(tf.matmul(L1, W2) + b2)
-
-W3 = tf.Variable(tf.random_normal([256, numClasses]))
-b3 = tf.Variable(tf.random_normal([numClasses]))
-hypothesis = tf.matmul(L2, W3) + b3
-'''
 W1 = tf.Variable(tf.random_normal([784, 512]))
 b1 = tf.Variable(tf.random_normal([512]))
 L1 = tf.nn.relu(tf.matmul(X, W1) + b1)
@@ -109,15 +88,9 @@ W4 = tf.Variable(tf.random_normal([512, numClasses]))
 b4 = tf.Variable(tf.random_normal([numClasses]))
 hypothesis = tf.matmul(L3, W4) + b4
 
-# define cost/loss & optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-    logits=hypothesis, labels=Y))
+# cost & train
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=hypothesis, labels=Y))
 train = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
-
-
-#cost = tf.reduce_mean(-tf.reduce_sum(Y * tf.log(hypothesis), axis=1))
-#train = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost)
-
 
 
 # parameters
@@ -150,14 +123,6 @@ with tf.Session() as sess:
 
     # Test the model using test sets
     print("Accuracy: ", sess.run(accuracy, feed_dict={X: test_data, Y: test_labels}))
-    '''
-    print(
-        "Accuracy: ",
-        accuracy.eval(
-            session=sess, feed_dict={X: test_data, Y: test_labels}
-        ),
-    )
-    '''
 
     # Get Label and predict
     r = random.randint(0, numTest - 1)
@@ -173,3 +138,5 @@ with tf.Session() as sess:
         interpolation="nearest",
     )
     plt.show()
+
+
